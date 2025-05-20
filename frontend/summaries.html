@@ -1,0 +1,105 @@
+
+لقد أرسلت
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الملخصات المحفوظة</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    .summary-card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .summary-card button {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    #clear-all {
+      background: red;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>الملخصات</h1>
+  
+  <a href="index.html" style="
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+">رجوع</a>
+
+  <button id="clear-all">حذف كل الملخصات</button>
+
+  <main id="summaries-container">
+    <p>جاري التحميل...</p>
+  </main>
+
+  <script>
+    const container = document.getElementById("summaries-container");
+    const clearBtn = document.getElementById("clear-all");
+
+    let saved = JSON.parse(localStorage.getItem("summaries") || "[]");
+
+    function renderSummaries() {
+      if (saved.length === 0) {
+        container.innerHTML = "<p>لا يوجد ملخصات محفوظة بعد.</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+      saved.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "summary-card";
+        card.innerHTML = `
+          <h3>الدرس ${index + 1}</h3>
+          <p><strong>النص:</strong> ${item.lesson}</p>
+          <p><strong>الملخص:</strong> ${item.summary}</p>
+          <button onclick="deleteSummary(${index})">حذف هذا الملخص</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function deleteSummary(index) {
+      if (confirm("هل تريد حذف هذا الملخص؟")) {
+        saved.splice(index, 1);
+        localStorage.setItem("summaries", JSON.stringify(saved));
+        renderSummaries(); // نرندر من غير reload
+      }
+    }
+
+    clearBtn.addEventListener("click", () => {
+      if (confirm("هل أنت متأكد من حذف جميع الملخصات؟")) {
+        localStorage.removeItem("summaries");
+        saved = [];
+        renderSummaries();
+      }
+    });
+
+    renderSummaries();
+  </script>
+</body>
+</html>
